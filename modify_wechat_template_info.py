@@ -5,25 +5,25 @@ import time
 
 def WeChat_template():
     def parse_info(text):
-        # 修改正则表达式以匹配两种格式
+        # 修改正则表达式，使用.*来匹配面积后的所有内容
         pattern = (
-            r"((\d{4})?\s*(\d{2}:\d{2})\s+(\d+)\s+(.+)|(\d{6})-(\d{4})-(\d+)\s+(.+))"
+            r"((\d{4})?\s*(\d{1,2}:\d{2})\s+(\d+)\s+(.*)|(\d{6})-(\d{4})-(\d+)\s+(.*))"
         )
-        match = re.match(pattern, text)
+        match = re.match(pattern, text.strip())
         if match:
             # 第一种格式
             if match.group(2):  # 如果有年份
                 date = match.group(2)
                 time = match.group(3)
                 area = match.group(4)
-                address = match.group(5)
+                address = match.group(5).strip()  # 添加strip()去除可能的首尾空格
             else:  # 第二种格式
                 date = (
                     f"{match.group(6)[:2]}.{match.group(6)[2:4]}.{match.group(6)[4:]}"
                 )
                 time = f"{match.group(7)[:2]}:{match.group(7)[2:]}"
                 area = match.group(8)
-                address = match.group(9)
+                address = match.group(9).strip()  # 添加strip()去除可能的首尾空格
             return date, time, area, address
         else:
             return None
