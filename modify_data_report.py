@@ -74,30 +74,38 @@ def data_report():
     # 填写第四页检测结果
     for table in doc.tables:
         if table.cell(0, 0).text == "序":
-            # 处理列（点位）
-            for i, cell in enumerate(
-                [table.cell(3, 1), table.cell(4, 1), table.cell(5, 1), table.cell(6, 1)]
-            ):
-                for paragraph in cell.paragraphs:
+            # 处理列（点位）和对应的值
+            for i in range(4):
+                # 获取点位输入
+                point_input = input(f"点位{i+1}:")
+                
+                # 处理点位
+                cell_point = table.cell(i+3, 1)
+                for paragraph in cell_point.paragraphs:
                     run = paragraph.add_run()
-                    # 设置字体大小
                     run.font.size = Pt(10.5)
                     run.bold = True
-                    # 设置字体对其方式
                     paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                    run.text = input(f"点位{i+1}:")
-            # 处理行（值）
-            for i, cell in enumerate(
-                [table.cell(3, 2), table.cell(4, 2), table.cell(5, 2), table.cell(6, 2)]
-            ):
-                for paragraph in cell.paragraphs:
+                    run.text = point_input
+
+                # 处理值
+                cell_value = table.cell(i+3, 2)
+                for paragraph in cell_value.paragraphs:
                     run = paragraph.add_run()
-                    # 设置字体大小
                     run.font.size = Pt(10.5)
                     run.bold = True
-                    # 设置字体对其方式
                     paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
                     run.text = input(f"值{i+1}:")
+
+                # 如果有输入点位，在第三列填入"≤0.08"
+                if point_input.strip():  # 检查点位是否有实际输入（排除空格）
+                    cell_limit = table.cell(i+3, 3)
+                    for paragraph in cell_limit.paragraphs:
+                        run = paragraph.add_run()
+                        run.font.size = Pt(10.5)
+                        run.bold = True
+                        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                        run.text = "≤0.08"
 
     # 保存修改后的文件
     doc.save(
