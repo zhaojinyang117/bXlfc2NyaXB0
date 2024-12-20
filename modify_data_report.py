@@ -19,18 +19,16 @@ def data_report():
     day = sampling_date_obj.day
 
     # 判断检测类型
-    detection_type = int(input("请确认检测类型：\n->初检：1\n->复检：2\n=>"))
-    if detection_type == 1:
-        dt = "初检"
-    elif detection_type == 2:
-        dt = "复检"
-    else:
-        print("请重新输入")
-        detection_type = int(input("请确认检测类型：\n->初检：1\n->复检：2\n->"))
+    while True:
+        detection_type = int(input("请确认检测类型：\n->初检：1\n->复检：2\n=>"))
         if detection_type == 1:
             dt = "初检"
+            break
         elif detection_type == 2:
             dt = "复检"
+            break
+        else:
+            print("无效输入！请输入1或2")
 
     # 加载docx文件
     doc = Document("./resource/模板.docx")  # 假设模板文件名为“模板.docx”
@@ -103,7 +101,7 @@ def data_report():
                     for paragraph in cell_limit.paragraphs:
                         run = paragraph.add_run()
                         run.font.size = Pt(10.5)
-                        run.bold = True
+                        run.bold = False
                         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
                         run.text = "≤0.08"
 
