@@ -299,8 +299,19 @@ class DataReportDialog(QWidget):
                 builtins.input = mock_input
                 # 修改工作目录到脚本所在目录
                 original_cwd = os.getcwd()
-                script_dir = os.path.dirname(os.path.abspath(__file__))
+                
+                # 使用 sys._MEIPASS 来处理 PyInstaller 打包后的路径
+                if hasattr(sys, '_MEIPASS'):
+                    script_dir = sys._MEIPASS
+                else:
+                    script_dir = os.path.dirname(os.path.abspath(__file__))
+                    
                 os.chdir(script_dir)
+                
+                # 确保输出目录存在
+                output_dir = os.path.join(script_dir, 'output')
+                if not os.path.exists(output_dir):
+                    os.makedirs(output_dir)
                 
                 # 直接导入并运行模块
                 import modify_data_report
