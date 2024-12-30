@@ -178,13 +178,27 @@ class DataReportDialog(QWidget):
             }
         """)
         
+        # 在基本信息输入框之前添加文本解析区域
+        parse_label = QLabel("订单信息解析：")
+        layout.addWidget(parse_label, 0, 0, 1, 2)
+        
+        # 添加多行文本输入框
+        self.order_text = QLineEdit()
+        self.order_text.setPlaceholderText("粘贴订单信息到这里...")
+        layout.addWidget(self.order_text, 1, 0, 1, 2)
+        
+        # 添加解析按钮
+        parse_btn = QPushButton("解析信息")
+        parse_btn.clicked.connect(self.parse_order_info)
+        layout.addWidget(parse_btn, 2, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        
         # 添加基本信息输入框
         fields = [
-            ("项目地址：", 0),
-            ("联系人：", 1),
-            ("采样日期（MM-DD）：", 2),
-            ("现场采样温度（℃）：", 3),
-            ("现场采样湿度（%RH）：", 4)
+            ("项目地址：", 3),
+            ("联系人：", 4),
+            ("采样日期（MM-DD）：", 5),
+            ("现场采样温度（℃）：", 6),
+            ("现场采样湿度（%RH）：", 7)
         ]
         
         self.entries = {}
@@ -197,7 +211,7 @@ class DataReportDialog(QWidget):
         
         # 添加检测类型选择
         type_label = QLabel("检测类型：")
-        layout.addWidget(type_label, 5, 0)
+        layout.addWidget(type_label, 8, 0)
         
         type_layout = QHBoxLayout()
         self.type_var = "1"
@@ -208,18 +222,18 @@ class DataReportDialog(QWidget):
         self.radio2.toggled.connect(lambda: self.set_type("2"))
         type_layout.addWidget(self.radio1)
         type_layout.addWidget(self.radio2)
-        layout.addLayout(type_layout, 5, 1)
+        layout.addLayout(type_layout, 8, 1)
         
         # 添加点位输入
         point_label = QLabel("点位和值输入：")
-        layout.addWidget(point_label, 6, 0, 1, 2)
+        layout.addWidget(point_label, 9, 0, 1, 2)
         
         self.point_entries = []
         self.value_entries = []
         quick_texts = ["客厅", "主卧", "次卧", "儿童房"]
         
         for i in range(4):
-            row = 7 + i
+            row = 10 + i
             point_layout = QHBoxLayout()
             
             # 点位输入
@@ -247,7 +261,7 @@ class DataReportDialog(QWidget):
         # 添加生成报告按钮
         submit_btn = QPushButton("生成报告")
         submit_btn.clicked.connect(self.submit)
-        layout.addWidget(submit_btn, 11, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(submit_btn, 14, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
         
         # 居中显示窗口
         self.center_window()
@@ -266,6 +280,40 @@ class DataReportDialog(QWidget):
     def insert_quick_text(self, entry, text):
         """在指定输入框中插入文本"""
         entry.setText(text)
+    
+    def parse_order_info(self):
+        """解析订单信息"""
+        try:
+            text = self.order_text.text()
+            
+            # 解析联系人信息
+            name = ""
+            phone = ""
+            address = ""
+            
+            # 使用简单的文本解析
+            lines = text.split('\n')
+            for line in lines:
+                line = line.strip()
+                if line.startswith("姓名："):
+                    name = line.replace("姓名：", "").strip()
+                elif line.startswith("电话："):
+                    phone = line.replace("电话：", "").strip()
+                elif line.startswith("地址："):
+                    address = line.replace("地址：", "").strip()
+            
+            # 组合联系人信息（姓名+电话）
+            contact_info = f"{name} {phone}".strip()
+            
+            # 填充到对应的输入框
+            if contact_info:
+                self.entries["联系人："].setText(contact_info)
+            if address:
+                self.entries["项目地址："].setText(address)
+            
+        except Exception as e:
+            from PyQt6.QtWidgets import QMessageBox
+            QMessageBox.warning(self, "警告", f"解析信息时出错: {str(e)}")
     
     def submit(self):
         """提交数据并生成报告"""
