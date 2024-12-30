@@ -1,3 +1,13 @@
-python-docx
-docx2pdf
-pyperclip 
+# GUI框架
+PyQt6>=6.0.0
+
+# 文档处理
+python-docx>=0.8.11
+docx2pdf>=0.1.8
+
+# 工具包
+pyperclip>=1.8.2
+pillow>=9.0.0
+
+# 可选依赖
+pyinstaller>=5.0.0  # 用于构建可执行文件

@@ -1,1 +1,6 @@
 __pycache__/
+build/
+dist/
+python311/
+build.bat
+数据处理工具.spec
